@@ -1,5 +1,5 @@
 (load-file ".scaffolding.clj")
-(defproject cc.qbits/tape (version)
+(defproject io.zalky/tape (version)
   :description "ChronicleQueue helpers"
   :repositories ~(repositories)
   :dependencies ~(deps)

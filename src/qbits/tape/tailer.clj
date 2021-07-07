@@ -40,9 +40,11 @@
   https://github.com/OpenHFT/Chronicle-Queue#how-does-chronicle-queue-work"
   ([queue]
    (make queue nil))
-  ([queue {:keys [poll-interval]
+  ([queue {:keys [poll-interval id]
            :or {poll-interval 50}}]
-   (let [^ExcerptTailer tailer (.createTailer (q/underlying-queue queue))
+   (let [^ExcerptTailer tailer (if id
+                                 (.createTailer (q/underlying-queue queue) id)
+                                 (.createTailer (q/underlying-queue queue)))
          codec (q/codec queue)]
      (reify
        ITailer
