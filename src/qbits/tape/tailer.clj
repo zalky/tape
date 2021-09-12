@@ -19,6 +19,7 @@
   (to-end! [tailer] "Goto the end of the queue")
   (to-start! [tailer] "Set index to the start of the queue")
   (index [tailer] "Returns current tailer index")
+  (tailer [tailer] "Returns the tailer object")
   (queue [tailer] "Returns Queue associated with that tailer"))
 
 (defn make
@@ -78,6 +79,8 @@
          (.index tailer))
 
        (queue [_] queue)
+
+       (tailer [_] tailer)
 
        clojure.lang.Seqable
        (seq [this]
