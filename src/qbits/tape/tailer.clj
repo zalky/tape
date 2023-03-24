@@ -19,7 +19,7 @@
   (to-end! [tailer] "Goto the end of the queue")
   (to-start! [tailer] "Set index to the start of the queue")
   (index [tailer] "Returns current tailer index")
-  (tailer [tailer] "Returns the tailer object")
+  (underlying-tailer [tailer] "Returns the underlying tailer object")
   (queue [tailer] "Returns Queue associated with that tailer"))
 
 (defn make
@@ -58,10 +58,7 @@
                     (ByteBuffer/wrap)
                     (codec/read codec)))
              (catch Throwable t
-               (throw (ex-info "Tailer read failed"
-                               {:type ::read-failed
-                                :tailer tailer}
-                               t))))))
+               (throw t)))))
 
        (set-direction! [_ direction]
          (.direction tailer (->tailer-direction direction)))
@@ -80,7 +77,7 @@
 
        (queue [_] queue)
 
-       (tailer [_] tailer)
+       (underlying-tailer [_] tailer)
 
        clojure.lang.Seqable
        (seq [this]

@@ -11,7 +11,8 @@
 (defprotocol IAppender
   (write! [appender x] "Writes a new message to queue.")
   (last-index [appender] "Returns the last index this appender appended")
-  (queue [appender] "Returns associated queue to this appender"))
+  (queue [appender] "Returns associated queue to this appender")
+  (underlying-appender [appender] "Returns the underlying appender"))
 
 (defn make
   "Creates a new appender instance.
@@ -25,7 +26,7 @@
      (reify
        IAppender
        (write! [_ x]
-         (let [rw (Bytes/wrapForRead (codec/write codec x))
+         (let [rw ^Bytes (Bytes/wrapForRead (codec/write codec x))
                ret (with-open [ctx (.writingDocument appender)]
                      ;; Could throw if the queue is closed in another thread or on
                      ;; thread death: be paranoid here, we dont want to end up with
@@ -37,17 +38,15 @@
                          (.rollbackOnClose ctx)
                          t)))]
            (when (instance? Throwable ret)
-             (throw (ex-info "Appender write failed"
-                             {:type ::write-failed
-                              :appender appender
-                              :msg x}
-                             ret)))
+             (throw ret))
            ret))
 
        (last-index [_]
          (.lastIndexAppended appender))
 
        (queue [_] queue)
+
+       (underlying-appender [_] appender)
 
        p/Datafiable
        (datafy [_]
